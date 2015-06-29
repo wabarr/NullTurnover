@@ -15,7 +15,7 @@ FitExponential <- function(myTree, showPlot = FALSE) {
   nls_mod <- nls(N ~ exp(a * sortedFADs), data=data.frame(sortedFADs = sortedFADs, N=N), start=list(a=1))
   
   if (showPlot){
-    MYA <- max(as.numeric(dist.nodes(myTree)))/2
+    MYA <- max(as.numeric(ape::dist.nodes(myTree)))/2
     #hypothetical date values for producing smooth exponential predictions
     evenFADs <- seq(0, MYA, length.out = 100)
     predictedN <- predict(nls_mod, newdata = sortedFADs)
