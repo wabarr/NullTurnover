@@ -5,7 +5,7 @@
 #' @param showPlot Whether or not to show plots. Default is FALSE
 #' 
 
-TestFADs <- function(nBins, myTree, showPlot=FALSE){
+DetectFADPulses <- function(nBins, myTree, showPlot=FALSE){
   nls_mod <- FitExponential(myTree, showPlot=showPlot)
   MYA <- max(as.numeric(dist.nodes(myTree)))/2
   #set up the bounds for binning
