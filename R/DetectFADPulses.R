@@ -2,11 +2,13 @@
 #' 
 #' @param nBins the desired number of bins for combining FADs
 #' @param myTree an object of class "phylo"
-#' @param showPlot Whether or not to show plots. Default is FALSE
+#' @param showBinPlot Whether or not to show the plots of binned residuals. Default is FALSE
+#' @param showExpected whether or not to show the plot of the expected versus actual.  Default is FALSE
+#' @param showTree Whether or not to plot the tree. Default is FALSE
 #' 
 
-DetectFADPulses <- function(nBins, myTree, showPlot=FALSE){
-  nls_mod <- FitExponential(myTree, showPlot=showPlot)
+DetectFADPulses <- function(nBins, myTree, showBinPlot = FALSE, showExpected = FALSE, showTree = FALSE){
+  nls_mod <- FitExponential(myTree, showExpected = showExpected, showTree = showTree)
   MYA <- max(as.numeric(dist.nodes(myTree)))/2
   #set up the bounds for binning
   bounds <- seq(0, MYA, length.out = nBins + 1)
@@ -20,11 +22,13 @@ DetectFADPulses <- function(nBins, myTree, showPlot=FALSE){
   binnedResiduals <- observedAddedTaxa - expectedAddedTaxa
   
   mids <- (lowerBounds + upperBounds)/2
-  if (showPlot){
+  if (showBinPlot){
     plot(mids, binnedResiduals, main = sprintf("%d taxa: %d bins (Observed - Expected)", length(myTree$tip.label), nBins))
     lines(mids, binnedResiduals, lty=2)
   }
   
   if (min(binnedResiduals, na.rm=TRUE)<0) warning("some intervals had fewer observed originations than expected from exponential model.  Running chi-square values only on intervals with positive values.")
-  return(chisq.test(binnedResiduals[binnedResiduals>0]))
+  testResults <- chisq.test(binnedResiduals[binnedResiduals>0])
+  print(testResults)
+  return(testResults)
 }

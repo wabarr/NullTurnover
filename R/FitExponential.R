@@ -1,21 +1,21 @@
 #' Internal Function to Fit exponential model to FADs
 #' 
 #' @param myTree an object of class "phylo"
-#' @param showPlot whether or not to show plot.  Default is FALSE
-#' @param showPlot Whether or not to show plots. Default is FALSE
+#' @param showExpected whether or not to show the plot of the expected versus actual.  Default is FALSE
+#' @param showTree Whether or not to plot the tree. Default is FALSE
 #' 
 #' @return a Nonlinear Least Squares object of class "nls" representing the exponential fit 
 
-FitExponential <- function(myTree, showPlot = FALSE) {
+FitExponential <- function(myTree, showExpected = FALSE, showTree = FALSE) {
   stopifnot(is(myTree, "phylo"))
   
   # assumes FADs are returned sorted from GetFADs() function
-  sortedFADs <- GetFADs(myTree, showTree = showPlot)
+  sortedFADs <- GetFADs(myTree, showTree = showTree)
   
   N <- 1:length(sortedFADs)
   nls_mod <- nls(N ~ exp(a * dates), data=data.frame(dates = sortedFADs, N=N), start=list(a=1))
   
-  if (showPlot){
+  if (showExpected){
     MYA <- max(nodeHeights(myTree))
     #hypothetical date values for producing smooth exponential predictions
     evenFADs <- seq(0, MYA, length.out = 100)
