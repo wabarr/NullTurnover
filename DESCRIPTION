@@ -1,0 +1,11 @@
+Package: NullTurnover
+Type: Package
+Title: Does simulation-based null model hypothesis testing for turnover patterns
+Version: 0.1
+Date: 2015-06-25
+Authors@R: person("W. Andrew", "Barr", email = "wabarr@gmail.com",
+                  role = c("aut", "cre"))
+Description: More about what it does (maybe more than one line)
+License: MIT + file LICENSE
+Imports: phytools,
+    ape
