@@ -4,17 +4,22 @@
 #' 
 #' 
 #' @param myTree an object of class "phylo"
+#' @param sorted
+#' @param showTree Whether or not to plot the tree. Default is FALSE
 #' 
-GetFADs <- function(myTree){
+GetFADs <- function(myTree, sorted = TRUE, showTree = FALSE){
   stopifnot(is(myTree, "phylo"))
   stopifnot(length(myTree$tip.label)>2)
-  require(ape)
+  require(phytools)
+    
+  FADs <- phytools::nodeHeights(myTree)[,1]
   
-  allDistancesAsMatrix<-ape::dist.nodes(myTree)
-  #tips are numbered 1 + nTips, so we can add 1 to get the root node
-  rootNode<-length(myTree$tip.label)+1
-  #we pull out the row for the root node of the distance matrix
-  #looking only at columns for other nodes, not tips
-  FADs<-allDistancesAsMatrix[rootNode,seq(from=rootNode+1,to=nrow(allDistancesAsMatrix))]   
-  return(sort(as.vector(FADs)))
+  if (showTree) {
+    plot(myTree,show.tip.label = FALSE, main=sprintf("Tree with %d tips", length(myTree$tip.label)))
+  }
+  
+  ifelse(sorted, 
+         return(sort(FADs)),
+         return(FADs)
+         )
 }
