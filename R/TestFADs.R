@@ -2,7 +2,7 @@
 #' 
 #' @param nBins the desired number of bins for combining FADs
 #' @param myTree an object of class "phylo"
-#' 
+#' @param showPlot Whether or not to show plots. Default is FALSE
 #' 
 
 TestFADs <- function(nBins, myTree, showPlot=FALSE){
@@ -21,7 +21,7 @@ TestFADs <- function(nBins, myTree, showPlot=FALSE){
   
   mids <- (lowerBounds + upperBounds)/2
   if (showPlot){
-    plot(mids, binnedResiduals, main = "Observed new FADs - Expected ")
+    plot(mids, binnedResiduals, main = sprintf("%d taxa: %d bins (Observed - Expected)", length(myTree$tip.label), nBins))
     lines(mids, binnedResiduals, lty=2)
   }
   
