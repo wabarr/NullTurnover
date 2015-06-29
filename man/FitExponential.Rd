@@ -10,6 +10,8 @@ FitExponential(myTree, showPlot = FALSE)
 \item{myTree}{an object of class "phylo"}
 
 \item{showPlot}{whether or not to show plot.  Default is FALSE}
+
+\item{showPlot}{Whether or not to show plots. Default is FALSE}
 }
 \value{
 a Nonlinear Least Squares object of class "nls" representing the exponential fit

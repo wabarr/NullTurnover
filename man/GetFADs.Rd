@@ -4,10 +4,14 @@
 \alias{GetFADs}
 \title{Internal function for getting FADs from a tree}
 \usage{
-GetFADs(myTree)
+GetFADs(myTree, sorted = TRUE, showTree = FALSE)
 }
 \arguments{
 \item{myTree}{an object of class "phylo"}
+
+\item{sorted}{}
+
+\item{showTree}{Whether or not to plot the tree. Default is FALSE}
 }
 \description{
 function to get ages (i.e. distance from root node) of each non-tip node
