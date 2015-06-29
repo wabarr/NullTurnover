@@ -13,3 +13,7 @@ test_that("error catching works", {
 test_that("output is numeric", 
           expect_is(GetFADs(myTree),"numeric")
 )
+
+test_that("FAD count is correct", 
+          expect_equal(length(GetFADs(myTree)), nrow(myTree$edge))
+          )
