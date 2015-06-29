@@ -4,14 +4,12 @@
 \alias{TestFADs}
 \title{Bin FADs from a tree, and test for pulses using chi-square}
 \usage{
-TestFADs(nBins, myTree, nls_mod)
+TestFADs(nBins, myTree)
 }
 \arguments{
 \item{nBins}{the desired number of bins for combining FADs}
 
 \item{myTree}{an object of class "phylo"}
-
-\item{nls_mod}{an exponential model fit to the FADs in}
 }
 \description{
 Bin FADs from a tree, and test for pulses using chi-square

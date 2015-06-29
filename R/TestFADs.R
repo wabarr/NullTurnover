@@ -2,11 +2,11 @@
 #' 
 #' @param nBins the desired number of bins for combining FADs
 #' @param myTree an object of class "phylo"
-#' @param nls_mod an exponential model fit to the FADs in 
 #' 
 #' 
 
-TestFADs <- function(nBins, myTree, nls_mod){
+TestFADs <- function(nBins, myTree){
+  nls_mod <- FitExponential(myTree)
   MYA <- max(as.numeric(dist.nodes(myTree)))/2
   #set up the bounds for binning
   bounds <- seq(0, MYA, length.out = nBins + 1)
