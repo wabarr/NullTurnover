@@ -29,5 +29,4 @@ Vrba. 1995. The Fossil Record of African Antelopes (Mammalia, Bovidae) in Relati
 }
 
 \examples{
-~~ simple examples of the most important functions ~~
 }
