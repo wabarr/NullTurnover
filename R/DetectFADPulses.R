@@ -25,6 +25,6 @@ DetectFADPulses <- function(nBins, myTree, showPlot=FALSE){
     lines(mids, binnedResiduals, lty=2)
   }
   
-  
-  return(chisq.test(binnedResiduals))
+  if (min(binnedResiduals, na.rm=TRUE)<0) warning("some intervals had fewer observed originations than expected from exponential model.  Running chi-square values only on intervals with positive values.")
+  return(chisq.test(binnedResiduals[binnedResiduals>0]))
 }
