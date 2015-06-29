@@ -5,8 +5,8 @@
 #' 
 #' 
 
-TestFADs <- function(nBins, myTree){
-  nls_mod <- FitExponential(myTree)
+TestFADs <- function(nBins, myTree, showPlot=FALSE){
+  nls_mod <- FitExponential(myTree, showPlot=showPlot)
   MYA <- max(as.numeric(dist.nodes(myTree)))/2
   #set up the bounds for binning
   bounds <- seq(0, MYA, length.out = nBins + 1)
@@ -14,14 +14,17 @@ TestFADs <- function(nBins, myTree){
   upperBounds <- bounds[2:length(bounds)]
   
   sortedFADs <- GetFADs(myTree)
-  expectedAddedTaxa <- predict(nls_mod, newdata=list(sortedFADs = upperBounds)) - predict(nls_mod, newdata=list(sortedFADs = lowerBounds))
+  expectedAddedTaxa <- predict(nls_mod, newdata=list(dates = upperBounds)) - predict(nls_mod, newdata=list(dates = lowerBounds))
   
   observedAddedTaxa <- sapply(upperBounds, FUN = function(x) sum(sortedFADs <= x)) - sapply(lowerBounds, FUN = function(x) sum(sortedFADs <= x))
   binnedResiduals <- observedAddedTaxa - expectedAddedTaxa
   
   mids <- (lowerBounds + upperBounds)/2
-  plot(mids, binnedResiduals, main = "Observed new FADs - Expected ")
-  lines(mids, binnedResiduals, lty=2)
+  if (showPlot){
+    plot(mids, binnedResiduals, main = "Observed new FADs - Expected ")
+    lines(mids, binnedResiduals, lty=2)
+  }
+  
   
   return(chisq.test(binnedResiduals))
 }

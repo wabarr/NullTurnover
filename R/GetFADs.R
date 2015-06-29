@@ -7,6 +7,7 @@
 #' 
 GetFADs <- function(myTree){
   stopifnot(is(myTree, "phylo"))
+  stopifnot(length(myTree$tip.label)>2)
   require(ape)
   
   allDistancesAsMatrix<-ape::dist.nodes(myTree)
@@ -14,6 +15,6 @@ GetFADs <- function(myTree){
   rootNode<-length(myTree$tip.label)+1
   #we pull out the row for the root node of the distance matrix
   #looking only at columns for other nodes, not tips
-  FADs<-allDistancesAsMatrix[rootNode,seq(from=rootNode+2,to=nrow(allDistancesAsMatrix))]   
+  FADs<-allDistancesAsMatrix[rootNode,seq(from=rootNode+1,to=nrow(allDistancesAsMatrix))]   
   return(sort(as.vector(FADs)))
 }

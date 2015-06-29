@@ -12,14 +12,14 @@ FitExponential <- function(myTree, showPlot = FALSE) {
   sortedFADs <- GetFADs(myTree)
   
   N <- 1:length(sortedFADs)
-  nls_mod <- nls(N ~ exp(a * sortedFADs), data=data.frame(sortedFADs = sortedFADs, N=N), start=list(a=1))
+  nls_mod <- nls(N ~ exp(a * dates), data=data.frame(dates = sortedFADs, N=N), start=list(a=1))
   
   if (showPlot){
     MYA <- max(as.numeric(ape::dist.nodes(myTree)))/2
     #hypothetical date values for producing smooth exponential predictions
     evenFADs <- seq(0, MYA, length.out = 100)
     predictedN <- predict(nls_mod, newdata = sortedFADs)
-    evenPredictedN <- predict(nls_mod, newdata=list(sortedFADs = evenFADs))
+    evenPredictedN <- predict(nls_mod, newdata=list(dates = evenFADs))
     plot(sortedFADs, N, pch=16,xlim=c(0,MYA))
     lines(evenFADs, evenPredictedN, col="red", lty=2, cex=10)
   }
