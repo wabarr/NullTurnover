@@ -4,14 +4,17 @@
 \alias{FitExponential}
 \title{Internal Function to Fit exponential model to FADs}
 \usage{
-FitExponential(myTree, showPlot = FALSE)
+FitExponential(myTree = NULL, FADs = NULL, showExpected = FALSE,
+  showTree = FALSE)
 }
 \arguments{
-\item{myTree}{an object of class "phylo"}
+\item{myTree}{an object of class "phylo". You must include EITHER a value for myTree OR a value for FADs}
 
-\item{showPlot}{whether or not to show plot.  Default is FALSE}
+\item{FADs}{Vector of taxon first appearances.  You must include EITHER a value for myTree OR a value for FADs}
 
-\item{showPlot}{Whether or not to show plots. Default is FALSE}
+\item{showExpected}{whether or not to show the plot of the expected versus actual.  Default is FALSE}
+
+\item{showTree}{Whether or not to plot the tree. Default is FALSE}
 }
 \value{
 a Nonlinear Least Squares object of class "nls" representing the exponential fit
