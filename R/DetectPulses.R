@@ -1,30 +1,39 @@
-#' Test for turnover pulses in FADs
+#' Test for pulses using using Foote Rates
 #' 
-#' @param nBins the desired number of bins for combining FADs
-#' @param myTree an object of class "phylo". You must include EITHER a value for myTree OR a value for FADs, but not both.
-#' @param FADs Vector of taxon first appearances. You must include EITHER a value for myTree OR a value for FADs, but not both.
-#' @param showBinPlot Whether or not to show the plots of binned residuals. Default is FALSE
-#' @param showTree Whether or not to plot the tree. Default is FALSE
+#' @param treeDepth The temporal depth (in millions of years) represented by the tree.
+#' @param criterion How extreme an observed turnover rate must be to be considered a turnover pulse (relative to the interquartile distance for all bins considered as a group).
+#' @param nTaxa The desired number of taxa in the simulated phylogenetic tree. Passed to phytools::pbtree.
+#' @param deathRate The rate of extinction.  Passed to phytools::pbtree.
+#' @param desiredBinNumber The number of bins that treeDepth will be broken into to compute turnover rates. 
+#' @param plotTree Whether or not to plot the simulated tree. Default is FALSE.
+#' @param plotRates Whether or not to plot a histogram of the calculated rates.  Default is TRUE.
 #' 
-DetectPulses <- function(nBins, myTree=NULL, FADs=NULL, showBinPlot = FALSE, showTree = FALSE){
+#' 
+detectPulses <- function(treeDepth = 7, criterion = 1.5, nTaxa = 100, deathRate = 0, desiredBinNumber = 30, plotTree=FALSE, plotRates = TRUE) {
+  require(ggplot2)
+  require(phytools)
+  require(paleotree)
   
-  if (is.null(myTree)) {
-    maxMYA <- max(FADs, na.rm=TRUE)
-    minMYA <- min(FADs, na.rm=TRUE)
-    sortedFADs <- sort(FADs)
-  }
-  else {
-    maxMYA <- max(nodeHeights(myTree))
-    minMYA <- 0
-    sortedFADs <- GetFADs(myTree)
+  
+  myTree <- phytools::pbtree(n=nTaxa, d=deathRate, scale = treeDepth)
+  
+  ranges <- abs(phytools::nodeHeights(tree = myTree) - treeDepth)
+  colnames(ranges) <- c("FAD", "LAD")
+  
+  binnedRanges <- paleotree::binTimeData(ranges, int.length = treeDepth / desiredBinNumber)
+  
+  if(plotTree) plot(myTree)
+  
+  perCapRates <- as.data.frame(paleotree::perCapitaRates(binnedRanges, plot=FALSE))
+  
+  if(plotRates){
+    qplot(x=(int.start + int.end)/2, y=pRate, data=perCapRates, geom="bar", stat="identity") + 
+      scale_x_reverse() + 
+      theme_bw(25) + 
+      labs(x="Interval Midpoint (MYA)", y="Foote Origination Rate")
   }
   
-  #set up the bounds for binning
-  bounds <- seq(round(minMYA,1), round(maxMYA,1), by=0.1)
-  lowerBounds <- bounds[1:length(bounds) - 1]
-  upperBounds <- bounds[2:length(bounds)]
-  mids <- (lowerBounds + upperBounds)/2
+  # how many intervals fall outside the specified range compared to interquartile range
+  return(sum(perCapRates$pRate > quantile(perCapRates$pRate, 0.75, na.rm=T) * criterion, na.rm=TRUE))
   
-  observedAddedTaxa <- sapply(upperBounds, FUN = function(x) sum(sortedFADs <= x)) - sapply(lowerBounds, FUN = function(x) sum(sortedFADs <= x))
-  plot(lowess(x = mids, y=observedAddedTaxa))
-  }
+}
