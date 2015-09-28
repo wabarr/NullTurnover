@@ -47,10 +47,8 @@ VrbaDetectPulses <- function(nBins, myTree=NULL, FADs=NULL, showBinPlot = FALSE,
     #points(binMids, binnedResiduals, col="red")
   }
   
-  if (min(binnedResiduals, na.rm=TRUE)<0) warning("some intervals had fewer observed originations than expected from exponential model.  Running chi-square with any negative numbers replaced with zero.")
-  binnedResidualsSubstitudeZeros <- binnedResiduals
-  binnedResidualsSubstitudeZeros[binnedResiduals<0] <- 0
-  testResults <- chisq.test(binnedResidualsSubstitudeZeros)
+  if (min(binnedResiduals, na.rm=TRUE)<0) warning("some intervals had fewer observed originations than expected from exponential model.  Running chi-square values only on intervals with positive values.")
+  testResults <- chisq.test(binnedResiduals[binnedResiduals>0])
   print(testResults)
   return(list(chisq = testResults, lowerBounds = lowerBounds, upperBounds = upperBounds))
 }
