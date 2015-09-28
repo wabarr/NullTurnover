@@ -6,7 +6,7 @@
 #' @param FADs Vector of taxon first appearances.  You must include EITHER a value for myTree OR a value for FADs
 #' @return a Nonlinear Least Squares object of class "nls" representing the exponential fit 
 
-FitExponential <- function(myTree=NULL, FADs=NULL, showExpected = FALSE, showTree = FALSE) {
+fitExponential <- function(myTree=NULL, FADs=NULL, showExpected = FALSE, showTree = FALSE) {
   stopifnot(!(is.null(myTree) && is.null(FADs)))
   stopifnot(is.null(myTree) || is.null(FADs))
   

@@ -9,7 +9,7 @@
 #' @param showTree Whether or not to plot the tree. Default is FALSE
 #' 
 
-VrbaDetectPulses <- function(nBins, myTree=NULL, FADs=NULL, showBinPlot = FALSE, nls_mod = NULL, showExpected = FALSE, showTree = FALSE){
+vrbaDetectPulses <- function(nBins, myTree=NULL, FADs=NULL, showBinPlot = FALSE, nls_mod = NULL, showExpected = FALSE, showTree = FALSE){
   stopifnot(!(is.null(myTree) && is.null(FADs)))
   stopifnot(is.null(myTree) || is.null(FADs))
   require(phytools)

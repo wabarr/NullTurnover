@@ -8,7 +8,7 @@
 #' @param showTree Whether or not to plot the tree. Default is FALSE
 #' 
 
-LoessDetectPulses <- function(nBins, myTree=NULL, FADs=NULL, showPlots = FALSE, span = 0.2, showTree = FALSE){
+loessDetectPulses <- function(nBins, myTree=NULL, FADs=NULL, showPlots = FALSE, span = 0.2, showTree = FALSE){
   stopifnot(!(is.null(myTree) && is.null(FADs)))
   stopifnot(is.null(myTree) || is.null(FADs))
   require(phytools)
