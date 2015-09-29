@@ -10,7 +10,6 @@
 #' 
 #' 
 detectPulses <- function(treeDepth = 7, criterion = 1.5, nTaxa = 100, deathRate = 0, desiredBinNumber = 30, plotTree=FALSE, plotRates = TRUE) {
-  require(ggplot2)
   require(phytools)
   require(paleotree)
   
@@ -22,11 +21,14 @@ detectPulses <- function(treeDepth = 7, criterion = 1.5, nTaxa = 100, deathRate 
   
   binnedRanges <- paleotree::binTimeData(ranges, int.length = treeDepth / desiredBinNumber)
   
-  if(plotTree) plot(myTree)
+  if(plotTree) {
+    plot(myTree) 
+  }
   
   perCapRates <- as.data.frame(paleotree::perCapitaRates(binnedRanges, plot=FALSE))
   
   if(plotRates){
+    require(ggplot2)
     qplot(x=(int.start + int.end)/2, y=pRate, data=perCapRates, geom="bar", stat="identity") + 
       scale_x_reverse() + 
       theme_bw(25) + 
