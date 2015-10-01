@@ -1,7 +1,7 @@
 #' Test for pulses using using Foote Rates
 #' 
 #' @param treeDepth The temporal depth (in millions of years) represented by the tree.
-#' @param criterion How extreme an observed turnover rate must be to be considered a turnover pulse (relative to the interquartile distance for all bins considered as a group).
+#' @param criterion How extreme an observed turnover rate must be to be considered a turnover pulse (relative to the interquartile distance for the distribution of all bins).
 #' @param nTaxa The desired number of taxa in the simulated phylogenetic tree. Passed to phytools::pbtree.
 #' @param deathRate The rate of extinction.  Passed to phytools::pbtree.
 #' @param desiredBinNumber The number of bins that treeDepth will be broken into to compute turnover rates. 
@@ -29,10 +29,11 @@ detectPulses <- function(treeDepth = 7, criterion = 1.5, nTaxa = 100, deathRate 
   
   if(plotRates){
     require(ggplot2)
-    qplot(x=(int.start + int.end)/2, y=pRate, data=perCapRates, geom="bar", stat="identity") + 
+    thePlot <- qplot(x=(int.start + int.end)/2, y=pRate, data=perCapRates, geom="bar", stat="identity") + 
       scale_x_reverse() + 
       theme_bw(25) + 
       labs(x="Interval Midpoint (MYA)", y="Foote Origination Rate")
+    print(thePlot)
   }
   
   # how many intervals fall outside the specified range compared to interquartile range
