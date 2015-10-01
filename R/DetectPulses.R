@@ -9,7 +9,7 @@
 #' @param plotRates Whether or not to plot a histogram of the calculated rates.  Default is TRUE.
 #' 
 #' 
-detectPulses <- function(treeDepth = 7, criterion = 1.5, nTaxa = 100, deathRate = 0, desiredBinNumber = 30, plotTree=FALSE, plotRates = TRUE) {
+detectPulses <- function(treeDepth = 7, criterion = 1.5, nTaxa = 100, deathRate = 0, desiredBinNumber = 30, plotTree=FALSE, plotRates = FALSE) {
   require(phytools)
   require(paleotree)
   
