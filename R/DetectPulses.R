@@ -30,6 +30,7 @@ detectPulses <- function(treeDepth = 7, criterion = 1.5, nTaxa = 100, deathRate 
   if(plotRates){
     require(ggplot2)
     thePlot <- qplot(x=(int.start + int.end)/2, y=pRate, data=perCapRates, geom="bar", stat="identity") + 
+      geom_hline(yint=quantile(perCapRates$pRate, 0.75, na.rm=T) * criterion, color='red') + 
       scale_x_reverse() + 
       theme_bw(25) + 
       labs(x="Interval Midpoint (MYA)", y="Foote Origination Rate")
