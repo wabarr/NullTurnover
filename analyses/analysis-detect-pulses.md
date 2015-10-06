@@ -190,13 +190,6 @@ qplot(factor(unlist(criteriaResults)), criteria, size=I(2), geom="violin") +
 
 ```r
 library(readxl)
-```
-
-```
-## Warning: package 'readxl' was built under R version 3.1.3
-```
-
-```r
 bibi <- read_excel("/Users/wabarr/Dropbox/TurnoverPulseRedux/Bibi-Kiessling-PNAS-Supp1.xlsx")
 
 inRange <- function(lowerBound, upperBound, FAD, LAD) {
@@ -204,7 +197,9 @@ inRange <- function(lowerBound, upperBound, FAD, LAD) {
 }
 
 #how many taxa are in the range 3.75 - 1.25?
-sum(sapply(1:nrow(bibi), FUN=function(rowIndex) {inRange(lower=1.25, upper=3.75, FAD=bibi[rowIndex,"FAD"], LAD=bibi[rowIndex,"LAD"])}))
+
+taxaInRange <- sapply(1:nrow(bibi), FUN=function(rowIndex) {inRange(lower=1.25, upper=3.75, FAD=bibi[rowIndex,"FAD"], LAD=bibi[rowIndex,"LAD"])})
+sum(taxaInRange)
 ```
 
 ```
@@ -234,12 +229,11 @@ sum(bibiResults > 0) / length(bibiResults)
 ```
 
 ```r
-qplot(bibiResults) +  
-  labs(x="number of pulses")
-```
-
-```
-## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
+qplot(factor(bibiResults), geom="bar", position="stack") +  
+  labs(x="number of pulses") + 
+  annotate(x=2.5, y=600, geom="text", label=paste0(100*round(sum(bibiResults > 0) / length(bibiResults),2),"% of simulations \ndetect at least one pulse"), size=8) + 
+  labs(title="Number of pulses: African bovid parameters")
 ```
 
 ![](analysis-detect-pulses_files/figure-html/unnamed-chunk-18-1.png) 
+

@@ -155,7 +155,9 @@ inRange <- function(lowerBound, upperBound, FAD, LAD) {
 }
 
 #how many taxa are in the range 3.75 - 1.25?
-sum(sapply(1:nrow(bibi), FUN=function(rowIndex) {inRange(lower=1.25, upper=3.75, FAD=bibi[rowIndex,"FAD"], LAD=bibi[rowIndex,"LAD"])}))
+
+taxaInRange <- sapply(1:nrow(bibi), FUN=function(rowIndex) {inRange(lower=1.25, upper=3.75, FAD=bibi[rowIndex,"FAD"], LAD=bibi[rowIndex,"LAD"])})
+sum(taxaInRange)
 
 # what is the extinction rate in that interval, with respect to the originiation rate?
 sum(((bibi$LAD < 3.75) * (bibi$LAD > 1.25))) / sum(((bibi$FAD < 3.75) * (bibi$FAD > 1.25)))
@@ -167,8 +169,10 @@ bibiResults <- sapply(1:1000, FUN=function(x) detectPulses(treeDepth = 2.5, crit
 
 ```{r}
 sum(bibiResults > 0) / length(bibiResults)
-qplot(bibiResults) +  
-  labs(x="number of pulses")
-
+qplot(factor(bibiResults), geom="bar", position="stack") +  
+  labs(x="number of pulses") + 
+  annotate(x=2.5, y=600, geom="text", label=paste0(100*round(sum(bibiResults > 0) / length(bibiResults),2),"% of simulations \ndetect at least one pulse"), size=8) + 
+  labs(title="Number of pulses: African bovid parameters")
 
 ```
+

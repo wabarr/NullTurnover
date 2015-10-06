@@ -13,7 +13,7 @@ detectPulses <- function(treeDepth = 7, criterion = 1.5, nTaxa = 100, deathRate 
   require(phytools)
   require(paleotree)
   
-  
+  #TODO check on sample size varaiation
   myTree <- phytools::pbtree(n=nTaxa, d=deathRate, scale = treeDepth)
   
   ranges <- abs(phytools::nodeHeights(tree = myTree) - treeDepth)
