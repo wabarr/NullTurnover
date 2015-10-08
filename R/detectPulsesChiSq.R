@@ -1,0 +1,45 @@
+#' Test for pulses using using chisquare
+#' 
+#' @param treeDepth The temporal depth (in millions of years) represented by the tree.
+#' @param nTaxa The desired number of taxa in the simulated phylogenetic tree. Passed to phytools::pbtree.
+#' @param deathRate The rate of extinction.  Passed to phytools::pbtree.
+#' @param desiredBinNumber The number of bins that treeDepth will be broken into to compute turnover rates. 
+#' @param plotTree Whether or not to plot the simulated tree. Default is FALSE.
+#' @param plotRates Whether or not to plot a histogram of the calculated rates.  Default is TRUE.
+#' @param excludeZeroes Whether or not to exclude time bins with a rate of zero. Default is FALSE.
+#' 
+detectPulsesChiSq <- function(treeDepth = 7, criterion = 1.5, nTaxa = 100, deathRate = 0, desiredBinNumber = 30, plotTree=FALSE, plotRates = FALSE, excludeZeroes = FALSE) {
+require(phytools)
+  require(paleotree)
+  
+  #TODO check on sample size varaiation
+  myTree <- phytools::pbtree(n=nTaxa, d=deathRate, scale = treeDepth)
+  
+  ranges <- abs(phytools::nodeHeights(tree = myTree) - treeDepth)
+  colnames(ranges) <- c("FAD", "LAD")
+  
+  binnedRanges <- paleotree::binTimeData(ranges, int.length = treeDepth / desiredBinNumber)
+  
+  if(plotTree) {
+    plot(myTree) 
+  }
+  
+  perCapRates <- as.data.frame(paleotree::perCapitaRates(binnedRanges, plot=FALSE))
+  
+  if(excludeZeroes) perCapRates <- perCapRates[perCapRates$pRate>0,]
+  
+  if(plotRates){
+    require(ggplot2)
+    thePlot <- qplot(x=(int.start + int.end)/2, y=pRate, data=perCapRates, geom="bar", stat="identity") + 
+      geom_hline(yint=quantile(perCapRates$pRate, 0.75, na.rm=T) * criterion, color='red') + 
+      scale_x_reverse() + 
+      theme_bw(25) + 
+      labs(x="Interval Midpoint (MYA)", y="Foote Origination Rate")
+    print(thePlot)
+  }
+  
+  
+  # how many intervals fall outside the specified range compared to interquartile range
+  return(chisq.test(na.omit(perCapRates$pRate))$p.value)
+  
+}
