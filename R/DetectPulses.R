@@ -7,9 +7,10 @@
 #' @param desiredBinNumber The number of bins that treeDepth will be broken into to compute turnover rates. 
 #' @param plotTree Whether or not to plot the simulated tree. Default is FALSE.
 #' @param plotRates Whether or not to plot a histogram of the calculated rates.  Default is TRUE.
+#' @param excludeZeroes Whether or not to exclude time bins with a rate of zero. Default is FALSE.
 #' 
 #' 
-detectPulses <- function(treeDepth = 7, criterion = 1.5, nTaxa = 100, deathRate = 0, desiredBinNumber = 30, plotTree=FALSE, plotRates = FALSE) {
+detectPulses <- function(treeDepth = 7, criterion = 1.5, nTaxa = 100, deathRate = 0, desiredBinNumber = 30, plotTree=FALSE, plotRates = FALSE, excludeZeroes = FALSE) {
   require(phytools)
   require(paleotree)
   
@@ -27,6 +28,8 @@ detectPulses <- function(treeDepth = 7, criterion = 1.5, nTaxa = 100, deathRate 
   
   perCapRates <- as.data.frame(paleotree::perCapitaRates(binnedRanges, plot=FALSE))
   
+  if(excludeZeroes) perCapRates <- perCapRates[perCapRates$pRate>0,]
+  
   if(plotRates){
     require(ggplot2)
     thePlot <- qplot(x=(int.start + int.end)/2, y=pRate, data=perCapRates, geom="bar", stat="identity") + 
@@ -38,6 +41,7 @@ detectPulses <- function(treeDepth = 7, criterion = 1.5, nTaxa = 100, deathRate 
   }
   
   # how many intervals fall outside the specified range compared to interquartile range
-  return(sum(perCapRates$pRate > quantile(perCapRates$pRate, 0.75, na.rm=T) * criterion, na.rm=TRUE))
+  pulses <- sum(perCapRates$pRate > quantile(perCapRates$pRate, 0.75, na.rm=T) * criterion, na.rm=TRUE)
+  return(pulses)
   
 }
