@@ -215,12 +215,13 @@ sum(((bibi$LAD < 3.75) * (bibi$LAD > 1.25))) / sum(((bibi$FAD < 3.75) * (bibi$FA
 ## [1] 0.8533333
 ```
 
+
+## Bibi results including zero bins
+
+
 ```r
 bibiResults <- sapply(1:1000, FUN=function(x) detectPulses(treeDepth = 2.5, criterion = 1.5, nTaxa=52, desiredBinNumber = 10, deathRate =  0.8533333))
-```
 
-
-```r
 sum(bibiResults > 0) / length(bibiResults)
 ```
 
@@ -237,3 +238,24 @@ qplot(factor(bibiResults), geom="bar", position="stack") +
 
 ![](analysis-detect-pulses_files/figure-html/unnamed-chunk-18-1.png) 
 
+## Bibi results excluding zero bins
+
+
+```r
+bibiResults <- sapply(1:1000, FUN=function(x) detectPulses(treeDepth = 2.5, criterion = 1.5, nTaxa=52, desiredBinNumber = 10, deathRate =  0.8533333, excludeZeroes = TRUE))
+
+sum(bibiResults > 0) / length(bibiResults)
+```
+
+```
+## [1] 0.012
+```
+
+```r
+qplot(factor(bibiResults), geom="bar", position="stack") +  
+  labs(x="number of pulses") + 
+  annotate(x=2.03, y=600, geom="text", label=paste0(100*round(sum(bibiResults > 0) / length(bibiResults),2),"% of simulations \ndetect at least one pulse"), size=8) + 
+  labs(title="Number of pulses: African bovid parameters")
+```
+
+![](analysis-detect-pulses_files/figure-html/unnamed-chunk-19-1.png) 
