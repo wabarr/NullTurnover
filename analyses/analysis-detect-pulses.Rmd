@@ -208,3 +208,20 @@ qplot(factor(bibiResults), geom="bar", position="stack") +
   labs(title="Number of pulses X^2: African bovid parameters")
 
 ```
+
+## Calculate average birth and death of Bibi data
+
+```{r}
+bibiIntervals <- binTimeData(bibi[,c("FAD", "LAD")], int.length = 0.25)
+bibiRates <- perCapitaRates(bibiIntervals, plot=FALSE)
+desiredIntervals <- bibiRates[,"int.start"] %in% seq(3.75, 1.5, by=-0.25)
+bibiSubset <- bibiRates[desiredIntervals,]
+bibiP <- mean(bibiSubset[,"pRate"])
+bibiQ <- mean(bibiSubset[,"qRate"])
+```
+
+## Simulate a tree with Bapst package paleotree
+```{r}
+bibiFossilRecord <- simFossilRecord(p=bibiP/0.25, q=bibiQ/0.25, totalTime = 7, nTotalTaxa = c(50, 300))
+simTree <- taxa2phylo(fossilRecord2fossilTaxa(bibiFossilRecord))
+```

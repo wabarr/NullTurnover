@@ -1,35 +1,36 @@
 #' Test for pulses using using Foote Rates
 #' 
-#' @param treeDepth The temporal depth (in millions of years) represented by the tree.
+#' @param totalTime The temporal depth (in millions of years) represented by the simulation/
 #' @param criterion How extreme an observed turnover rate must be to be considered a turnover pulse (relative to the interquartile distance for the distribution of all bins).
-#' @param nTaxa The desired number of taxa in the simulated phylogenetic tree. Passed to phytools::pbtree.
-#' @param deathRate The rate of extinction.  Passed to phytools::pbtree.
-#' @param desiredBinNumber The number of bins that treeDepth will be broken into to compute turnover rates. 
+#' @param nTotalTaxa The minimum and maximum acceptable number of taxa in the tree.  A numeric vector of length two (e.g. c(min, max))
+#' @param deathRate The average (per interval, per lineage) rate of extinction.  
+#' @param birthRate The average (per interval, per lineage) rate of origination. 
+#' @param desiredBinNumber The number of bins for computing turnover rates. \
+#' @param targetBins Vector indicating subset of bins in which to look for pulses. You must provide only the interval starting time. 
 #' @param plotTree Whether or not to plot the simulated tree. Default is FALSE.
 #' @param plotRates Whether or not to plot a histogram of the calculated rates.  Default is TRUE.
-#' @param excludeZeroes Whether or not to exclude time bins with a rate of zero. Default is FALSE.
 #' 
 #' 
-detectPulses <- function(treeDepth = 7, criterion = 1.5, nTaxa = 100, deathRate = 0, desiredBinNumber = 30, plotTree=FALSE, plotRates = FALSE, excludeZeroes = FALSE) {
+detectPulses <- function(birthRate, deathRate, totalTime = 7, criterion = 1.5, nTotalTaxa = c(100, 300), desiredBinNumber = 28, targetBins = seq(3.75, 1.5, by=-0.25), plotTree=FALSE, plotRates = FALSE) {
   require(phytools)
   require(paleotree)
   
-  #TODO check on sample size varaiation
-  myTree <- phytools::pbtree(n=nTaxa, d=deathRate, scale = treeDepth)
+
+  fossRec <- simFossilRecord(p=birthRate, q=deathRate, totalTime = totalTime, nTotalTaxa = nTotalTaxa)
   
-  ranges <- abs(phytools::nodeHeights(tree = myTree) - treeDepth)
-  colnames(ranges) <- c("FAD", "LAD")
-  
-  binnedRanges <- paleotree::binTimeData(ranges, int.length = treeDepth / desiredBinNumber)
-  
+  tryCatch({
+    binnedRanges <- paleotree::binTimeData(fossilRecord2fossilTaxa(fossRec)[,c("orig.time", "ext.time")], int.length=totalTime/desiredBinNumber)
+  },error = function(e){
+    return(NA)
+  })
+    
   if(plotTree) {
     plot(myTree) 
   }
   
   perCapRates <- as.data.frame(paleotree::perCapitaRates(binnedRanges, plot=FALSE))
-  
-  if(excludeZeroes) perCapRates <- perCapRates[perCapRates$pRate>0,]
-  
+  perCapRates <- perCapRates[perCapRates[,1] %in% targetBins,]
+
   if(plotRates){
     require(ggplot2)
     thePlot <- qplot(x=(int.start + int.end)/2, y=pRate, data=perCapRates, geom="bar", stat="identity") + 
