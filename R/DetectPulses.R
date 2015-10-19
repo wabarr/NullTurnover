@@ -1,22 +1,17 @@
 #' Test for pulses using using Foote Rates
 #' 
+#' @param fossilRecord Object of class fossilRecord, as produced by paleotree::makeFossilRecord()
 #' @param totalTime The temporal depth (in millions of years) represented by the simulation/
 #' @param criterion How extreme an observed turnover rate must be to be considered a turnover pulse (relative to the interquartile distance for the distribution of all bins).
-#' @param nTotalTaxa The minimum and maximum acceptable number of taxa in the tree.  A numeric vector of length two (e.g. c(min, max))
-#' @param deathRate The average (per interval, per lineage) rate of extinction.  
-#' @param birthRate The average (per interval, per lineage) rate of origination. 
 #' @param desiredBinNumber The number of bins for computing turnover rates. \
 #' @param targetBins Vector indicating subset of bins in which to look for pulses. You must provide only the interval starting time. 
 #' @param plotTree Whether or not to plot the simulated tree. Default is FALSE.
 #' @param plotRates Whether or not to plot a histogram of the calculated rates.  Default is TRUE.
 #' 
 #' 
-detectPulses <- function(birthRate, deathRate, totalTime = 7, criterion = 1.5, nTotalTaxa = c(100, 300), desiredBinNumber = 28, targetBins = seq(3.75, 1.5, by=-0.25), plotTree=FALSE, plotRates = FALSE) {
-  require(phytools)
+detectPulses <- function(fossilRecord, criterion = 1.5, desiredBinNumber = 28, targetBins = seq(3.75, 1.5, by=-0.25), plotTree=FALSE, plotRates = FALSE) {
   require(paleotree)
   
-
-  fossRec <- simFossilRecord(p=birthRate, q=deathRate, totalTime = totalTime, nTotalTaxa = nTotalTaxa)
   
   tryCatch({
     binnedRanges <- paleotree::binTimeData(fossilRecord2fossilTaxa(fossRec)[,c("orig.time", "ext.time")], int.length=totalTime/desiredBinNumber)
