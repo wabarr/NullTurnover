@@ -60,11 +60,6 @@ criterionPulses <- mclapply(criteria, mc.cores=4, FUN=function(criterion){
   })
 ```
 
-```
-## Warning in mclapply(criteria, mc.cores = 4, FUN = function(criterion) {:
-## all scheduled cores encountered errors in user code
-```
-
 
 ```r
 qplot(xmin=criteria - 0.03, xmax=criteria + 0.03, ymin=0, ymax=unlist(criterionPulses), geom="rect") + 
@@ -94,6 +89,36 @@ summary(nTaxa)
 nPulses <- sapply(treez, FUN=function(tree){
   detectPulses(tree, desiredBinNumber = 20)
 })
+```
+
+```
+## Loading required package: phytools
+```
+
+```
+## Loading required package: maps
+```
+
+```
+## Warning: package 'maps' was built under R version 3.2.3
+```
+
+```
+## 
+##  # ATTENTION: maps v3.0 has an updated 'world' map.        #
+##  # Many country borders and names have changed since 1990. #
+##  # Type '?world' or 'news(package="maps")'. See README_v3. #
+```
+
+```
+## Loading required package: paleotree
+```
+
+```
+## Warning: package 'paleotree' was built under R version 3.2.3
+```
+
+```r
 summary(nPulses)
 ```
 
@@ -257,21 +282,21 @@ summary(lm(nTaxa / binNumber ~ factor(nPulses), data=binNumberPulses))
 ## lm(formula = nTaxa/binNumber ~ factor(nPulses), data = binNumberPulses)
 ## 
 ## Residuals:
-##      Min       1Q   Median       3Q      Max 
-## -10.6043  -3.5935  -0.7131   2.5087  23.1228 
+##     Min      1Q  Median      3Q     Max 
+## -9.9546 -3.5712 -0.8304  2.8491 25.7954 
 ## 
 ## Coefficients:
 ##                  Estimate Std. Error t value Pr(>|t|)    
-## (Intercept)       15.8543     0.1257 126.167  < 2e-16 ***
-## factor(nPulses)1  -2.0770     0.2743  -7.572 5.57e-14 ***
-## factor(nPulses)2  -3.6991     0.7077  -5.227 1.91e-07 ***
-## factor(nPulses)3  -5.0043     2.0145  -2.484   0.0131 *  
+## (Intercept)       15.9046     0.1249 127.364  < 2e-16 ***
+## factor(nPulses)1  -2.3334     0.2661  -8.768  < 2e-16 ***
+## factor(nPulses)2  -4.0283     0.7057  -5.708 1.31e-08 ***
+## factor(nPulses)3  -4.8896     1.8419  -2.655    0.008 ** 
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
-## Residual standard error: 4.925 on 1996 degrees of freedom
-## Multiple R-squared:  0.04025,	Adjusted R-squared:  0.03881 
-## F-statistic:  27.9 on 3 and 1996 DF,  p-value: < 2.2e-16
+## Residual standard error: 4.862 on 1996 degrees of freedom
+## Multiple R-squared:  0.051,	Adjusted R-squared:  0.04958 
+## F-statistic: 35.76 on 3 and 1996 DF,  p-value: < 2.2e-16
 ```
 
 
@@ -308,20 +333,20 @@ summary(lm(binNumber ~ factor(nPulses), data=binNumberPulses))
 ## 
 ## Residuals:
 ##    Min     1Q Median     3Q    Max 
-## -6.571 -2.388 -0.388  2.429  5.612 
+## -7.102 -2.374 -0.374  2.339  5.626 
 ## 
 ## Coefficients:
 ##                  Estimate Std. Error t value Pr(>|t|)    
-## (Intercept)      14.38802    0.07643 188.248  < 2e-16 ***
-## factor(nPulses)1  2.18306    0.16684  13.085  < 2e-16 ***
-## factor(nPulses)2  3.57198    0.43046   8.298  < 2e-16 ***
-## factor(nPulses)3  4.94531    1.22529   4.036 5.64e-05 ***
+## (Intercept)      14.37401    0.07676 187.261  < 2e-16 ***
+## factor(nPulses)1  2.28720    0.16359  13.981  < 2e-16 ***
+## factor(nPulses)2  3.72803    0.43380   8.594  < 2e-16 ***
+## factor(nPulses)3  4.34028    1.13222   3.833  0.00013 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
-## Residual standard error: 2.995 on 1996 degrees of freedom
-## Multiple R-squared:  0.1061,	Adjusted R-squared:  0.1047 
-## F-statistic: 78.95 on 3 and 1996 DF,  p-value: < 2.2e-16
+## Residual standard error: 2.989 on 1996 degrees of freedom
+## Multiple R-squared:  0.1161,	Adjusted R-squared:  0.1148 
+## F-statistic: 87.38 on 3 and 1996 DF,  p-value: < 2.2e-16
 ```
 
 ## How many intervals have at least one pulse, of those with less than 10 taxa per interval
@@ -340,9 +365,9 @@ forPlot %>% summarize(mean=mean(intervalsWithPulses))
 ```
 ## Source: local data frame [1 x 1]
 ## 
-##       mean
-##      (dbl)
-## 1 0.262657
+##        mean
+##       (dbl)
+## 1 0.4347023
 ```
 
 ```r
