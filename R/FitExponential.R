@@ -1,5 +1,5 @@
 #' Internal Function to Fit exponential model to FADs
-#' Function is to recreate images from Vrba (1995) classic turnover pulse figure
+#' Function is to recreate images from Vrba (1995) classic turnover pulse fig
 #' 
 #' @param myTree an object of class "phylo". You must include EITHER a value for myTree OR a value for FADs
 #' @param showExpected whether or not to show the plot of the expected versus actual.  Default is FALSE
