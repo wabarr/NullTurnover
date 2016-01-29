@@ -4,4 +4,4 @@ This is a simple package designed to simulate phylogenetic trees and to test for
 
 You can see the results of an analysis using this package [here](analyses/analyze-simtreez.Rmd)
 
-Simulated trees used in the analysis are [here](analyses/treez.Rmd)
+Simulated trees used in the analysis are [here](analyses/treez.Rdata)
