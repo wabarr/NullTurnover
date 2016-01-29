@@ -37,7 +37,7 @@ library(dplyr)
 
 ```r
 theme_set(theme_bw(20))
-knitr::opts_knit$set(fig.width=10, fig.height=10)
+knitr::opts_knit$set(fig.width=10, fig.height=10, dev="pdf")
 ```
 
 Trees produced by `phytools::pbtree(bibiP, bibiQ, n=50, t=10)`, using the per interval Foote rate average for the period examined by Bibi & Kiessling. 
@@ -283,20 +283,20 @@ summary(lm(nTaxa / binNumber ~ factor(nPulses), data=binNumberPulses))
 ## 
 ## Residuals:
 ##     Min      1Q  Median      3Q     Max 
-## -9.9546 -3.5712 -0.8304  2.8491 25.7954 
+## -9.3537 -3.7287 -0.7912  2.8755 22.4088 
 ## 
 ## Coefficients:
 ##                  Estimate Std. Error t value Pr(>|t|)    
-## (Intercept)       15.9046     0.1249 127.364  < 2e-16 ***
-## factor(nPulses)1  -2.3334     0.2661  -8.768  < 2e-16 ***
-## factor(nPulses)2  -4.0283     0.7057  -5.708 1.31e-08 ***
-## factor(nPulses)3  -4.8896     1.8419  -2.655    0.008 ** 
+## (Intercept)       15.7912     0.1228 128.625  < 2e-16 ***
+## factor(nPulses)1  -2.2088     0.2701  -8.176 5.14e-16 ***
+## factor(nPulses)2  -3.4172     0.6035  -5.662 1.71e-08 ***
+## factor(nPulses)3  -3.8979     1.8186  -2.143   0.0322 *  
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
-## Residual standard error: 4.862 on 1996 degrees of freedom
-## Multiple R-squared:  0.051,	Adjusted R-squared:  0.04958 
-## F-statistic: 35.76 on 3 and 1996 DF,  p-value: < 2.2e-16
+## Residual standard error: 4.801 on 1996 degrees of freedom
+## Multiple R-squared:  0.04521,	Adjusted R-squared:  0.04378 
+## F-statistic:  31.5 on 3 and 1996 DF,  p-value: < 2.2e-16
 ```
 
 
@@ -332,21 +332,21 @@ summary(lm(binNumber ~ factor(nPulses), data=binNumberPulses))
 ## lm(formula = binNumber ~ factor(nPulses), data = binNumberPulses)
 ## 
 ## Residuals:
-##    Min     1Q Median     3Q    Max 
-## -7.102 -2.374 -0.374  2.339  5.626 
+##     Min      1Q  Median      3Q     Max 
+## -6.7613 -2.4284  0.2387  2.2387  5.5716 
 ## 
 ## Coefficients:
 ##                  Estimate Std. Error t value Pr(>|t|)    
-## (Intercept)      14.37401    0.07676 187.261  < 2e-16 ***
-## factor(nPulses)1  2.28720    0.16359  13.981  < 2e-16 ***
-## factor(nPulses)2  3.72803    0.43380   8.594  < 2e-16 ***
-## factor(nPulses)3  4.34028    1.13222   3.833  0.00013 ***
+## (Intercept)       14.4284     0.0751 192.123  < 2e-16 ***
+## factor(nPulses)1   2.3329     0.1653  14.118  < 2e-16 ***
+## factor(nPulses)2   3.2231     0.3692   8.730  < 2e-16 ***
+## factor(nPulses)3   3.7145     1.1125   3.339 0.000856 ***
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
-## Residual standard error: 2.989 on 1996 degrees of freedom
-## Multiple R-squared:  0.1161,	Adjusted R-squared:  0.1148 
-## F-statistic: 87.38 on 3 and 1996 DF,  p-value: < 2.2e-16
+## Residual standard error: 2.937 on 1996 degrees of freedom
+## Multiple R-squared:  0.1164,	Adjusted R-squared:  0.1151 
+## F-statistic: 87.63 on 3 and 1996 DF,  p-value: < 2.2e-16
 ```
 
 ## How many intervals have at least one pulse, of those with less than 10 taxa per interval
@@ -365,9 +365,9 @@ forPlot %>% summarize(mean=mean(intervalsWithPulses))
 ```
 ## Source: local data frame [1 x 1]
 ## 
-##        mean
-##       (dbl)
-## 1 0.4347023
+##       mean
+##      (dbl)
+## 1 0.476269
 ```
 
 ```r

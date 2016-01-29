@@ -14,7 +14,7 @@ library(ggplot2)
 library(parallel)
 library(dplyr)
 theme_set(theme_bw(20))
-knitr::opts_knit$set(fig.width=10, fig.height=10)
+knitr::opts_knit$set(fig.width=10, fig.height=10, dev="pdf")
 ```
 
 Trees produced by `phytools::pbtree(bibiP, bibiQ, n=50, t=10)`, using the per interval Foote rate average for the period examined by Bibi & Kiessling. 
