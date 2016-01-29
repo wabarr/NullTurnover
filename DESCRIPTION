@@ -7,6 +7,9 @@ Authors@R: person("W. Andrew", "Barr", email = "wabarr@gmail.com",
                   role = c("aut", "cre"))
 Description: More about what it does (maybe more than one line)
 License: MIT + file LICENSE
-Imports: phytools,
+Imports:
+    phytools,
     ape
-Suggests: testthat
+Suggests:
+    testthat
+RoxygenNote: 5.0.1

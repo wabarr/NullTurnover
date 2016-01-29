@@ -222,6 +222,6 @@ bibiQ <- mean(bibiSubset[,"qRate"])
 
 ## Simulate a tree with Bapst package paleotree
 ```{r}
-bibiFossilRecord <- simFossilRecord(p=bibiP/0.25, q=bibiQ/0.25, totalTime = 7, nTotalTaxa = c(50, 300))
+bibiFossilRecord <- simFossilRecord(p=bibiP, q=bibiQ, totalTime = 10, nTotalTaxa = c(1, 500))
 simTree <- taxa2phylo(fossilRecord2fossilTaxa(bibiFossilRecord))
 ```
