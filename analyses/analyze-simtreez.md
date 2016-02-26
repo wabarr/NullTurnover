@@ -37,7 +37,7 @@ library(dplyr)
 
 ```r
 theme_set(theme_bw(20))
-knitr::opts_knit$set(fig.width=10, fig.height=10, dev="pdf")
+knitr::opts_knit$set(fig.width=10, fig.height=10)
 ```
 
 Trees produced by `phytools::pbtree(bibiP, bibiQ, n=50, t=10)`, using the per interval Foote rate average for the period examined by Bibi & Kiessling. 
@@ -69,6 +69,36 @@ qplot(xmin=criteria - 0.03, xmax=criteria + 0.03, ymin=0, ymax=unlist(criterionP
 
 ![](analyze-simtreez_files/figure-html/unnamed-chunk-4-1.png)\
 
+```r
+summary(lm(criteria~unlist(criterionPulses)))
+```
+
+```
+## 
+## Call:
+## lm(formula = criteria ~ unlist(criterionPulses))
+## 
+## Residuals:
+##       Min        1Q    Median        3Q       Max 
+## -0.038296 -0.028234 -0.001788  0.013488  0.063226 
+## 
+## Coefficients:
+##                         Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)              1.91060    0.02420   78.94 2.78e-10 ***
+## unlist(criterionPulses) -0.80682    0.04583  -17.60 2.16e-06 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.03646 on 6 degrees of freedom
+## Multiple R-squared:  0.981,	Adjusted R-squared:  0.9778 
+## F-statistic: 309.9 on 1 and 6 DF,  p-value: 2.157e-06
+```
+
+
+```r
+ggsave("FIG-PulseCriterionByPropTreesWithPulses.pdf", height=10, width=10 ,units = "in")
+```
+
 ## Sample size
 
 
@@ -89,36 +119,6 @@ summary(nTaxa)
 nPulses <- sapply(treez, FUN=function(tree){
   detectPulses(tree, desiredBinNumber = 20)
 })
-```
-
-```
-## Loading required package: phytools
-```
-
-```
-## Loading required package: maps
-```
-
-```
-## Warning: package 'maps' was built under R version 3.2.3
-```
-
-```
-## 
-##  # ATTENTION: maps v3.0 has an updated 'world' map.        #
-##  # Many country borders and names have changed since 1990. #
-##  # Type '?world' or 'news(package="maps")'. See README_v3. #
-```
-
-```
-## Loading required package: paleotree
-```
-
-```
-## Warning: package 'paleotree' was built under R version 3.2.3
-```
-
-```r
 summary(nPulses)
 ```
 
@@ -163,16 +163,18 @@ qplot(factor(nPulses), nTaxa, geom="boxplot", fill=factor(nPulses)) +
   coord_flip()
 ```
 
-![](analyze-simtreez_files/figure-html/unnamed-chunk-6-1.png)\
+![](analyze-simtreez_files/figure-html/unnamed-chunk-7-1.png)\
 
 ```r
+ggsave("FIG-NPulsesByTaxaonCount.pdf", height=10, width=10 ,units = "in")
+
 qplot(factor(nPulses), nTaxa, geom="violin", fill=factor(nPulses)) + 
   scale_fill_brewer(palette = "Blues", guide="none") + 
   labs(x="number of pulses detected", y="number of taxa") + 
   coord_flip()
 ```
 
-![](analyze-simtreez_files/figure-html/unnamed-chunk-6-2.png)\
+![](analyze-simtreez_files/figure-html/unnamed-chunk-7-2.png)\
 
 ## Bin number
 
@@ -181,201 +183,80 @@ qplot(factor(nPulses), nTaxa, geom="violin", fill=factor(nPulses)) +
 
 
 ```r
-binNumberPulses <- mclapply(10:20, mc.cores=4, FUN=function(binNumber) {
- nPulses <- sapply(treez, FUN=function(theTree){
-    return(detectPulses(theTree, desiredBinNumber = binNumber))
-    })
- return(list(binNumber = binNumber, nPulses=nPulses))
-})
+binNumberPulses <- readRDS("binNumberPulses.Rdata")
+#binNumberPulses <- mclapply(10:20, mc.cores=4, FUN=function(binNumber) {
+# nPulses <- sapply(treez, FUN=function(theTree){
+#    return(detectPulses(theTree, desiredBinNumber = binNumber))
+#    })
+# return(list(binNumber = binNumber, nPulses=nPulses))
+#})
+#
+#binNumberPulses <- lapply(binNumberPulses, FUN=function(x){
+#  data.frame(nPulses=x$nPulses, binNumber=rep(x$binNumber, length(x$nPulses)), nTaxa=nTaxa, treeID= 1:length(x$nPulses))
+#})
+#
+#binNumberPulses <- do.call(rbind, binNumberPulses)
+#saveRDS(binNumberPulses, file="binNumberPulses.Rdata")
+```
 
-binNumberPulses <- lapply(binNumberPulses, FUN=function(x){
-  data.frame(nPulses=x$nPulses, binNumber=rep(x$binNumber, length(x$nPulses)), nTaxa=nTaxa, treeID= 1:length(x$nPulses))
-})
+## Sample trees repeatedly
 
-binNumberPulses <- do.call(rbind, binNumberPulses)
 
+```r
 #sample one from each tree
-binNumberPulses <- binNumberPulses %>% group_by(treeID) %>% sample_n(size=1)
+sampBinNumberPulses <- lapply(1:100, 
+                              FUN=function(x){
+                                binNumberPulses %>% 
+                                  group_by(treeID) %>% 
+                                  sample_n(size=1)
+                                })
+```
+
+
+## Group by bin Number, record count per bin number and number of trees with at least one pulse
+
+
+```r
+countNumPulses <- lapply(sampBinNumberPulses, FUN=function(x){
+  x %>% 
+    group_by(binNumber) %>%
+    summarise(count=n(), numPulses=sum(nPulses), meanTaxPerBin=mean(nTaxa/binNumber))
+})
+
+countNumPulses <- do.call(plyr::rbind.fill, args = countNumPulses)
 ```
 
 
 ```r
-ggplot(subset(binNumberPulses, binNumber %in% c(10,12,14,16,18,20)), aes(x=factor(nPulses), fill=factor(nPulses))) + 
-  geom_bar(color="black") +
-  facet_grid(binNumber~.) + 
-  labs(x="Number of Pulses Detected") + 
-  guides(fill=FALSE) + 
-  scale_fill_brewer(palette = "Blues", name="bins") +
+ggplot(countNumPulses, aes(x=numPulses/count, y=meanTaxPerBin)) + 
+  geom_point() + 
+  labs(x="proportion of trees with at least one pulse", y="mean number of taxa per bin") + 
+  scale_y_continuous(breaks=seq(10, 20, 2)) + 
+  stat_smooth() + 
   coord_flip()
-```
-
-![](analyze-simtreez_files/figure-html/unnamed-chunk-8-1.png)\
-
-
-```r
-binNumberPulseCount <- binNumberPulses %>% 
-  group_by(binNumber, nPulses) %>%
-  summarize(count=n())
-```
-
-
-```r
-ggplot(subset(binNumberPulseCount, nPulses<4 & binNumber %in% c(10, 12, 14, 16, 18, 20)), aes(x=nPulses, y=count, fill=factor(binNumber), group=binNumber)) + 
-  geom_bar(stat="identity", position="dodge", color="grey20") + 
-  scale_fill_brewer(palette = "Blues", name="bins") + 
-  labs(x="number of pulses detected") 
-```
-
-![](analyze-simtreez_files/figure-html/unnamed-chunk-10-1.png)\
-
-
-```r
-ggplot(binNumberPulses, aes(x=1, y=nPulses, size=nTaxa)) + 
-  geom_point(alpha=1/10) + 
-  facet_grid(~binNumber) + 
-  scale_x_discrete(labels="") + 
-  scale_size_continuous("Taxa in Tree") + 
-  theme(axis.ticks.x=element_blank()) + 
-  guides(size = guide_legend(override.aes = list(alpha = 1))) + 
-  labs(x="number of bins", y="number of pulses detected")
 ```
 
 ![](analyze-simtreez_files/figure-html/unnamed-chunk-11-1.png)\
 
+```r
+ggsave("FIG-ProportionPulsesByMeanTaxaPerBin.pdf", height=10, width=10 ,units = "in")
+#this is distinctly non linear, so do I need to do stats?
+#summary(lm(nTaxa / binNumber ~ factor(nPulses), data=binNumberPulses))
+```
+
 
 ```r
-ggplot(subset(binNumberPulses,binNumber %in% c(10, 12, 14, 16, 18, 20)), aes(x=nPulses, y=nTaxa)) + 
-  geom_point(alpha=1/5, size=10) +
-  facet_grid(binNumber~.)
+ggplot(subset(countNumPulses, binNumber %in% seq(10, 20, 2)), aes(y=numPulses/count, x=binNumber, group=binNumber, fill=factor(binNumber))) + 
+  geom_boxplot() + 
+  labs(y="proportion of trees with at least one pulse", x="number of bins") + 
+  scale_x_continuous(breaks=seq(10, 20, 2)) + 
+  scale_fill_brewer(palette = "Blues", guide='none')
 ```
 
 ![](analyze-simtreez_files/figure-html/unnamed-chunk-12-1.png)\
 
-
 ```r
-ggplot(binNumberPulses, aes(x=factor(nPulses), y=nTaxa / binNumber, fill=factor(nPulses))) + 
-  geom_boxplot() + 
-  scale_fill_brewer(palette = "Blues", guide='none') + 
-  labs(x="number of pulses detected", y="mean number of taxa per bin") + 
-  coord_flip()
+ggsave("FIG-ProportionPulsesByBinNumber.pdf", height=10, width=10 ,units = "in")
+#summary(lm(binNumber ~ factor(nPulses), data=binNumberPulses))
 ```
-
-![](analyze-simtreez_files/figure-html/unnamed-chunk-13-1.png)\
-
-```r
-ggplot(binNumberPulses, aes(x=factor(nPulses), y=nTaxa / binNumber, fill=factor(nPulses))) + 
-  geom_violin() + 
-  scale_fill_brewer(palette = "Blues", guide='none') + 
-  labs(x="number of pulses detected", y="mean number of taxa per bin") + 
-  coord_flip()
-```
-
-![](analyze-simtreez_files/figure-html/unnamed-chunk-13-2.png)\
-
-```r
-summary(lm(nTaxa / binNumber ~ factor(nPulses), data=binNumberPulses))
-```
-
-```
-## 
-## Call:
-## lm(formula = nTaxa/binNumber ~ factor(nPulses), data = binNumberPulses)
-## 
-## Residuals:
-##     Min      1Q  Median      3Q     Max 
-## -9.3537 -3.7287 -0.7912  2.8755 22.4088 
-## 
-## Coefficients:
-##                  Estimate Std. Error t value Pr(>|t|)    
-## (Intercept)       15.7912     0.1228 128.625  < 2e-16 ***
-## factor(nPulses)1  -2.2088     0.2701  -8.176 5.14e-16 ***
-## factor(nPulses)2  -3.4172     0.6035  -5.662 1.71e-08 ***
-## factor(nPulses)3  -3.8979     1.8186  -2.143   0.0322 *  
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## Residual standard error: 4.801 on 1996 degrees of freedom
-## Multiple R-squared:  0.04521,	Adjusted R-squared:  0.04378 
-## F-statistic:  31.5 on 3 and 1996 DF,  p-value: < 2.2e-16
-```
-
-
-```r
-ggplot(binNumberPulses, aes(x=factor(nPulses), y=binNumber,fill=factor(nPulses))) + 
-  geom_boxplot() + 
-  scale_fill_brewer(palette = "Blues", guide='none') + 
-  labs(x="number of pulses detected", y="number of time bins") + 
-  scale_y_continuous(breaks=seq(10, 20, 2)) + 
-  coord_flip()
-```
-
-![](analyze-simtreez_files/figure-html/unnamed-chunk-14-1.png)\
-
-```r
-ggplot(binNumberPulses, aes(x=factor(nPulses), y=binNumber,fill=factor(nPulses))) + 
-  geom_violin() + 
-  scale_fill_brewer(palette = "Blues", guide='none') + 
-  labs(x="number of pulses detected", y="number of time bins") + 
-  scale_y_continuous(breaks=seq(10, 20, 2)) + 
-  coord_flip()
-```
-
-![](analyze-simtreez_files/figure-html/unnamed-chunk-14-2.png)\
-
-```r
-summary(lm(binNumber ~ factor(nPulses), data=binNumberPulses))
-```
-
-```
-## 
-## Call:
-## lm(formula = binNumber ~ factor(nPulses), data = binNumberPulses)
-## 
-## Residuals:
-##     Min      1Q  Median      3Q     Max 
-## -6.7613 -2.4284  0.2387  2.2387  5.5716 
-## 
-## Coefficients:
-##                  Estimate Std. Error t value Pr(>|t|)    
-## (Intercept)       14.4284     0.0751 192.123  < 2e-16 ***
-## factor(nPulses)1   2.3329     0.1653  14.118  < 2e-16 ***
-## factor(nPulses)2   3.2231     0.3692   8.730  < 2e-16 ***
-## factor(nPulses)3   3.7145     1.1125   3.339 0.000856 ***
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## Residual standard error: 2.937 on 1996 degrees of freedom
-## Multiple R-squared:  0.1164,	Adjusted R-squared:  0.1151 
-## F-statistic: 87.63 on 3 and 1996 DF,  p-value: < 2.2e-16
-```
-
-## How many intervals have at least one pulse, of those with less than 10 taxa per interval
-
-
-```r
-forPlot <- binNumberPulses %>% 
-  mutate(taxaPerBin = nTaxa/binNumber) %>% 
-  filter(taxaPerBin < 10) %>% 
-  group_by(binNumber) %>%
-  summarize(intervalsWithPulses = sum(nPulses>0)/length(nPulses))
-
-forPlot %>% summarize(mean=mean(intervalsWithPulses))
-```
-
-```
-## Source: local data frame [1 x 1]
-## 
-##       mean
-##      (dbl)
-## 1 0.476269
-```
-
-```r
-qplot(data=forPlot, xmin=binNumber-0.2, xmax=binNumber+0.2, ymin=0,ymax=intervalsWithPulses, geom="rect") + 
-    theme_bw(20) + 
-    scale_x_continuous(breaks=10:20) + 
-    labs(x="number of bins", y="proportion of trees with pulses")
-```
-
-![](analyze-simtreez_files/figure-html/unnamed-chunk-15-1.png)\
 
