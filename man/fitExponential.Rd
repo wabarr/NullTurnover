@@ -3,7 +3,7 @@
 \name{fitExponential}
 \alias{fitExponential}
 \title{Internal Function to Fit exponential model to FADs
-Function is to recreate images from Vrba (1995) classic turnover pulse figure}
+Function is to recreate images from Vrba (1995) classic turnover pulse fig}
 \usage{
 fitExponential(myTree = NULL, FADs = NULL, showExpected = FALSE,
   showTree = FALSE)
@@ -22,6 +22,6 @@ a Nonlinear Least Squares object of class "nls" representing the exponential fit
 }
 \description{
 Internal Function to Fit exponential model to FADs
-Function is to recreate images from Vrba (1995) classic turnover pulse figure
+Function is to recreate images from Vrba (1995) classic turnover pulse fig
 }
 

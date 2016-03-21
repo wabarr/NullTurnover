@@ -1,0 +1,173 @@
+---
+title: "test effect of simulation parameters"
+author: "Andrew Barr"
+date: "March 14, 2016"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+
+---
+
+```{r}
+knitr::opts_chunk$set(fig.width=7, fig.height=7)
+library(ggplot2)
+library(NullTurnover)
+theme_set(theme_bw(20))
+```
+
+## Simulate two hundred trees with a range of parameters
+##
+
+```{r cache=TRUE}
+twoHundred <- lapply(1:200, function(x){
+  params <- list(
+    origRateSim = runif(1, 0.3, 0.6), 
+    extRateSim = runif(1, 0.1, 0.3),
+    totalTime=c(4,8), 
+    sampRateSim = runif(1, 0.5, 2),
+    nruns = 1, 
+    plot=FALSE,
+    startTaxa = round(runif(1, 1, 5), 0), 
+    nSamp = c(30,100),
+    nExtant=c(0,500),
+    nTotalTaxa = c(0,500),
+    maxAttempts = Inf
+  )
+  return(do.call(simRecords,params)[[1]])
+})
+```
+
+
+## now set up basic list of parameters, which will be overridden one by one as we test the differnt arguments. 
+
+```{r}
+params <- list(
+    origRateSim = 0.4, 
+    extRateSim = 0.2,
+    totalTime=6, 
+    sampRateSim = 1,
+    nruns = 1, 
+    plot=FALSE,
+    startTaxa = 2, 
+    nSamp = c(30,100),
+    nExtant=c(0,500),
+    nTotalTaxa = c(0,500),
+    maxAttempts = 500
+)
+```
+
+## First, test the impact of bin number
+
+```{r cache=TRUE}
+binWidths <- seq(0.2, 1.6, length=16)
+
+proportions <- sapply(binWidths, FUN=function(x){
+  pulseTests <- detectPulses(twoHundred, binLength = x)
+  pulses <- sapply(pulseTests, function(x) return(sum(x$isPulse, na.rm=TRUE)))
+  return(sum(pulses>0, na.rm=T) / length(pulses))
+})
+
+```
+
+```{r cache=TRUE}
+gapSize <- (max(binWidths) - min(binWidths)) * 0.025
+binDuration <- qplot(xmin=binWidths-gapSize, xmax=binWidths+gapSize, ymin=0, ymax=proportions, geom="rect", fill=I("#045480")) +
+  labs(x="time bin duration (Ma)", y="proportion of simulations with a pulse")
+binDuration
+ggsave("binPlot.pdf",path="~/Dropbox/TurnoverPulseRedux/PaleoAnth_2016/", width=7, height=7, units="in")
+```
+
+## Impact of pulse criterion
+
+```{r cache=TRUE}
+criteria <- seq(1.5, 3, length=16)
+
+proportions <- sapply(criteria, FUN=function(x){
+  pulseTests <- detectPulses(twoHundred, criterion = x, binLength = 0.5)
+  pulses <- sapply(pulseTests, function(x) return(sum(x$isPulse, na.rm=TRUE)))
+  return(sum(pulses>0, na.rm=T) / length(pulses))
+})
+
+```
+
+```{r cache=TRUE}
+gapSize <- (max(criteria) - min(criteria)) * 0.025
+criterion <- qplot(xmin=criteria-0.04, xmax=criteria+0.04, ymin=0, ymax=proportions, geom="rect", fill=I("#045480")) + 
+  labs(x="turnover pulse criterion", y="proportion of simulations with a pulse")
+criterion
+ggsave("criterion.pdf",path="~/Dropbox/TurnoverPulseRedux/PaleoAnth_2016/", width=7, height=7, units="in")
+```
+
+## summarize simulation parameters used for the two hundred trees
+
+```{r}
+twoHundredParams <- lapply(twoHundred, FUN=function(x) return(x$theParameters))
+twoHundredParams <- do.call(rbind, params)
+```
+
+
+Test the various simulation parameters to observe their impact on the detection rates of turnover pulses
+
+
+## origination rate
+
+```{r cache=TRUE}
+# get vector of rates
+origRates <- runif(200,0.3,0.6)
+runParams <- params
+records <- lapply(origRates, function(x) {
+  #update the params list each time, before running simRecords function
+  runParams$origRateSim <- x
+  do.call(simRecords, runParams)[[1]]
+  ## note, do call will wrap the result up in a list, so we use [[1]] to get the result in desired format
+})
+
+#remove any that were errors
+records <- records[sapply(records, function(x) ifelse(is(x, "error"), FALSE, TRUE))]
+```
+
+```{r}
+pulseTests <- detectPulses(records, binLength = 1, plot = F)
+pulses <- sapply(pulseTests, function(x) return(sum(x$isPulse, na.rm=TRUE)))
+origRates <- sapply(records, FUN=function(x) return(x$theParameters[1,"origRateSim"]))
+qplot(factor(pulses), origRates, geom="boxplot", fill=factor(pulses)) + 
+  scale_fill_brewer(palette = "Blues", guide="none") + 
+  labs(x="number of pulses", y="origination rate")
+```
+
+```{r}
+summary(lm(origRates ~ pulses))
+```
+
+
+## extinction rate
+
+```{r cache=TRUE}
+# get vector of rates
+extRates <- runif(200,0.1,0.3)
+runParams <- params
+records <- lapply(extRates, function(x) {
+  #update the params list each time, before running simRecords function
+  runParams$extRateSim <- x
+  do.call(simRecords, runParams)[[1]]
+  ## note, do call will wrap the result up in a list, so we use [[1]] to get the result in desired format
+})
+
+#remove any that were errors
+records <- records[sapply(records, function(x) ifelse(is(x, "error"), FALSE, TRUE))]
+```
+
+```{r}
+pulseTests <- detectPulses(records, binLength = 1, plot = F)
+pulses <- sapply(pulseTests, function(x) return(sum(x$isPulse, na.rm=TRUE)))
+extRates <- sapply(records, FUN=function(x) return(x$theParameters[1,"extRateSim"]))
+qplot(factor(pulses), extRates, geom="boxplot", fill=factor(pulses)) + 
+  scale_fill_brewer(palette = "Blues", guide="none") + 
+  labs(x="number of pulses", y="extinction rate")
+```
+
+```{r}
+summary(lm(extRates ~ pulses))
+```
+
