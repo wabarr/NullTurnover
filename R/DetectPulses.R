@@ -115,7 +115,7 @@ plotRanges <- function(fossilRange, returnValue=FALSE) {
   thePlot <- ggplot(DF, aes(x=FAD,xend=LAD, y=num, yend=num)) + 
     geom_segment(size=2, color="#045480") + 
     scale_x_reverse() + 
-    labs(y="N (Cumulative Number of Taxa)", x="t(MYA)")
+    labs(y="N (Cumulative Number of Taxa)", x="Time (Ma)")
   ifelse(returnValue,
          return(thePlot),
          print(thePlot))
