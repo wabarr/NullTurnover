@@ -36,7 +36,10 @@ simRecords <- function(origRateSim,
         class(returnVal) <- c(class(returnVal), "fossilRecordPlusParams")
         return(returnVal)
         }
-        ,error=function(e){return(e)}
+        ,error=function(e){
+          theParameters <- data.frame(origRateSim,extRateSim,sampRateSim,totalTime,nTotalTaxa,nExtant,nSamp,startTaxa)
+          return(list(theRecord=NA, theParameters=theParameters))
+          }
       )
     })
     return(fossilRecords)
