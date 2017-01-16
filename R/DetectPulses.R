@@ -1,53 +1,10 @@
 #' test for pulses using paleotree functions
-#'
-
-simRecords <- function(origRateSim, 
-                       extRateSim, 
-                       nruns,
-                       totalTime, 
-                       sampRateSim,
-                       startTaxa,
-                       maxAttempts,
-                       nSamp=c(0,500),
-                       nExtant=c(10,500),
-                       nTotalTaxa=c(10,500),
-                       plot=TRUE,
-                       print.runs=FALSE) {
-  # simulates multiple fossil records, outputs a list, the first element of which is theRecord
-  # the second element of which is a dataframe showing the parameters used to simulate the record
-    require(paleotree)
-    # simulate taxon ranges under BDS model with simFossilRecord
-    fossilRecords<-lapply(1:nruns,FUN=function(x) {
-      tryCatch({
-        theRecord <- simFossilRecord(p=origRateSim,
-                        q=extRateSim, 
-                        r = sampRateSim,
-                        totalTime = totalTime,
-                        nTotalTaxa = nTotalTaxa,
-                        nExtant = nExtant,
-                        nSamp = nSamp,
-                        startTaxa = startTaxa,
-                        print.runs = print.runs,
-                        plot = plot,
-                        maxAttempts=maxAttempts
-                        )
-        theParameters <- data.frame(origRateSim,extRateSim,sampRateSim,totalTime,nTotalTaxa,nExtant,nSamp,startTaxa)
-        returnVal <- list(theRecord=theRecord,theParameters=theParameters)
-        class(returnVal) <- c(class(returnVal), "fossilRecordPlusParams")
-        return(returnVal)
-        }
-        ,error=function(e){
-          theParameters <- data.frame(origRateSim,extRateSim,sampRateSim,totalTime,nTotalTaxa,nExtant,nSamp,startTaxa)
-          return(list(theRecord=NA, theParameters=theParameters))
-          }
-      )
-    })
-    return(fossilRecords)
-}
-
+#' @param fossilRecords  an object of class fossilRecordPlusParams, produced by NullTurnover::simRecords() function
+#' @param binLength Length of time corresponding to bins, in simulation time units. Default is 0.25
+#' @param criterion Criterion for determining if a bin is a turnover pulse or not. Based on upper 3rd quartile of turnover rates for each bin.  Default 1.5 means that a pulse is defined as 1.5 times higher than the 3rd quartile, including zeros. 
+#' @param plot Whether or not to plot the ranges using NullTurnover::plotRanges(). Defaults to FALSE
 detectPulses <- function(fossilRecords, binLength=0.25,criterion=1.5, plot=FALSE){
-          ## takes an object of class fossilRecordPlusParams, produced by 
-          ## simRecords() function
+
           stopifnot(inherits(fossilRecords[[1]], "fossilRecordPlusParams"))
           require(paleotree)
           require(ggplot2)
@@ -105,21 +62,3 @@ testPulses<-function(origRate,criterion){
 }
 
 
-
-## plotRanges function plots fossil ranges using ggplot2
-plotRanges <- function(fossilRange, returnValue=FALSE) {
-  suppressPackageStartupMessages(require(ggplot2))
-  theme_set(theme_bw(20))
-  DF <- data.frame(fossilRange[(fossilRange[,1] > 0),]) #remove those with FAD of 0
-  DF <- DF[complete.cases(DF),]
-  DF <- DF[order(DF$FAD,decreasing = TRUE),]
-  DF$num <- 1:nrow(DF)
-  require(ggplot2)
-  thePlot <- ggplot(DF, aes(x=FAD,xend=LAD, y=num, yend=num)) + 
-    geom_segment(size=2, color="#045480") + 
-    scale_x_reverse() + 
-    labs(y="N (Cumulative Number of Taxa)", x="Time (Ma)")
-  ifelse(returnValue,
-         return(thePlot),
-         print(thePlot))
-}
