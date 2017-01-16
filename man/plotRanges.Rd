@@ -2,8 +2,7 @@
 % Please edit documentation in R/plotRanges.R
 \name{plotRanges}
 \alias{plotRanges}
-\title{plotRanges function plots fossil ranges using ggplot2
-uses ggplot2 to plot ranges}
+\title{function plots fossil ranges using ggplot2}
 \usage{
 plotRanges(fossilRange, returnValue = FALSE)
 }
@@ -13,7 +12,6 @@ plotRanges(fossilRange, returnValue = FALSE)
 \item{returnValue}{Do you want to simply return the plot, rather than printing it?}
 }
 \description{
-plotRanges function plots fossil ranges using ggplot2
-uses ggplot2 to plot ranges
+function plots fossil ranges using ggplot2
 }
 

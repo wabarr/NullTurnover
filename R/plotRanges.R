@@ -1,5 +1,6 @@
-#'plotRanges function plots fossil ranges using ggplot2
-#'uses ggplot2 to plot ranges
+#'
+#'function plots fossil ranges using ggplot2
+#
 #'@param fossilRange A fossil range object produced by paleotree::fossilRecord2fossilRanges()
 #'@param returnValue Do you want to simply return the plot, rather than printing it?
 
