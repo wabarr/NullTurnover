@@ -1,7 +1,10 @@
 ## NullTurnover package
 
-This is a simple package designed to simulate phylogenetic trees and to test for turnover pulses.  
+This is a simple package that uses the fantastic [paleotree](https://github.com/dwbapst/paleotree) package to examine a null model of faunal turnover to investigate the rate of false positives under a variety of simulation parameters
 
-You can see the results of an analysis using this package [here](analyses/analyze-simtreez.md)
 
-Simulated trees used in the analysis are [here](analyses/treez.Rdata)
+## Analysis files relevant to submitted MEE paper
+
+*  [Simulation Parameters](/Analysis_MEE_Manuscript/Analysis_MEE_manuscript_simulation_params_1000_trees.html)
+*  [Analytical Parameters](/Analysis_MEE_Manuscript/Analysis_MEE_manuscript_analytical_params_1000_trees.html)
+*  Simulated trees used in the analysis are [here](/Analysis_MEE_Manuscript/ThousandTrees.RDS)
