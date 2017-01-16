@@ -7,4 +7,4 @@ This is a simple package that uses the fantastic [paleotree](https://github.com/
 
 *  [Simulation Parameters](/Analysis_MEE_Manuscript/Analysis_MEE_manuscript_simulation_params_1000_trees.Rmd)
 *  [Analytical Parameters](/Analysis_MEE_Manuscript/Analysis_MEE_manuscript_analytical_params_1000_trees.Rmd)
-*  Simulated trees used in the analysis created using this code [here](/Analysis_MEE_Manuscript/Analysis_MEE_manuscript_createTrees.Rmd)
+*  Simulated trees used in the analysis created using this  [code](/Analysis_MEE_Manuscript/Analysis_MEE_manuscript_createTrees.Rmd)
