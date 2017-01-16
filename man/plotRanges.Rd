@@ -7,6 +7,11 @@ uses ggplot2 to plot ranges}
 \usage{
 plotRanges(fossilRange, returnValue = FALSE)
 }
+\arguments{
+\item{fossilRange}{A fossil range object produced by paleotree::fossilRecord2fossilRanges()}
+
+\item{returnValue}{Do you want to simply return the plot, rather than printing it?}
+}
 \description{
 plotRanges function plots fossil ranges using ggplot2
 uses ggplot2 to plot ranges
