@@ -5,6 +5,6 @@ This is a simple package that uses the fantastic [paleotree](https://github.com/
 
 ## Analysis files relevant to submitted Paleobiology paper
 
-*  [Simulation Parameters](/Analysis_Paleobio_Manuscript/Analysis_Paleobio_manuscript_simulation_params_1000_trees.Rmd)
-*  [Analytical Parameters](/Analysis_Paleobio_Manuscript/Analysis_Paleobio_manuscript_analytical_params_1000_trees.Rmd)
-*  Simulated trees used in the analysis created using this  [code](/Analysis_Paleobio_Manuscript/Analysis_Paleobio_manuscript_createTrees.Rmd)
+*  [Simulation Parameters](/Analysis_Paleobio_Manuscript/Analysis_Paleobio_manuscript_simulation_params_1000_trees.md)
+*  [Analytical Parameters](/Analysis_Paleobio_Manuscript/Analysis_Paleobio_manuscript_analytical_params_1000_trees.md)
+*  Simulated trees used in the analysis created using this  [code](/Analysis_Paleobio_Manuscript/Analysis_Paleobio_manuscript_createTrees.md)

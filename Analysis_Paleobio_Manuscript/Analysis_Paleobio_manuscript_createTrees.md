@@ -1,20 +1,25 @@
----
-title: "Analysis_MEE_manuscript_create_trees"
-author: "Andrew Barr"
-date: "3/16/2017"
-output: 
-  html_document:
-    keep_md: true
----
+# Analysis_MEE_manuscript_create_trees
+Andrew Barr  
+3/16/2017  
 
-```{r setup}
+
+```r
 #devtools::install_github("wabarr/NullTurnover")
 library(NullTurnover)
 library(paleotree)
 ```
 
+```
+## Loading required package: ape
+```
 
-```{r}
+```
+## Warning: package 'ape' was built under R version 3.3.2
+```
+
+
+
+```r
 iterations <- 1200
 ## Note....I am over producing fossil records because some of them will fail, and I need to get more than 1000
 extinctionRates <- runif(iterations, 0.1, 0.6)
