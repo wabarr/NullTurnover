@@ -1,0 +1,69 @@
+---
+title: "test analytical params"
+author: "Andrew Barr"
+output: html_document
+---
+```{r}
+knitr::opts_chunk$set(fig.width=7, fig.height=7)
+library(ggplot2)
+library(NullTurnover)
+theme_set(theme_bw(15))
+oneThousandTrees <- readRDS(file = "~/Dropbox/TurnoverPulseRedux/NullTurnover/Analysis_MEE_Manuscript/ThousandTrees.RDS")
+
+```
+
+### test bin number
+
+```{r}
+binWidths <- seq(0.2, 1.6, length=16)
+
+proportionsForBin <- sapply(binWidths, FUN=function(x){
+  pulseTests <- detectPulses(oneThousandTrees, binLength = x)
+  pulses <- sapply(pulseTests, function(x) return(sum(x$isPulse, na.rm=TRUE)))
+  return(sum(pulses>0, na.rm=T) / length(pulses))
+})
+
+```
+
+```{r}
+gapSize <- (max(binWidths) - min(binWidths)) * 0.025
+binDuration <- qplot(x=binWidths, y=proportionsForBin, geom="point", fill=I("#045480")) +
+  labs(x="time bin duration (Ma)", y="proportion of simulations with a pulse", title="Time Bin Length") + 
+  stat_smooth(method="loess", se=F, col="red") 
+  #coord_flip() 
+  #annotate("text", y=0.23, x=0.4, label="p<0.0001, r^2=0.99", size=8)
+binDuration
+#ggsave("binPlot.pdf",path="~/Dropbox/TurnoverPulseRedux/PaleoAnth_2016/", width=7, height=7, units="in",useDingbats=FALSE)
+summary(lm(binWidths~proportionsForBin))
+```
+
+### Test pulse criterion
+
+```{r}
+criteria <- seq(1.5, 3, length=16)
+
+proportionsForPulse <- sapply(criteria, FUN=function(x){
+  pulseTests <- detectPulses(oneThousandTrees, criterion = x, binLength = 0.5)
+  pulses <- sapply(pulseTests, function(x) return(sum(x$isPulse, na.rm=TRUE)))
+  return(sum(pulses>0, na.rm=T) / length(pulses))
+})
+
+```
+
+```{r}
+gapSize <- (max(criteria) - min(criteria)) * 0.025
+criterion <- qplot(criteria, y=proportionsForPulse, geom="point", color=I("#045480")) + 
+  stat_smooth(method="loess", se=F, col="red") + 
+  labs(x="turnover pulse criterion", y="proportion of simulations with a pulse", title="Turnover Pulse Criterion") 
+  #coord_flip()  
+  #annotate("text", x=1.6, y=0.22, label="p<0.0001, r^2=0.92", size=8) 
+criterion
+#ggsave("criterion.pdf",path="~/Dropbox/TurnoverPulseRedux/PaleoAnth_2016/", width=7, height=7, units="in",useDingbats=FALSE)
+summary(lm(criteria~proportionsForPulse))
+```
+
+```{r}
+library(gridExtra)
+bothPlots <- grid.arrange(criterion, binDuration,ncol=2)
+ggsave("analyticalParameters.pdf", bothPlots, width=8, height=4)
+```
