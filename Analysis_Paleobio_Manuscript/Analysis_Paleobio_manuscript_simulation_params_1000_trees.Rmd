@@ -113,6 +113,18 @@ lmods$origRateSim <- lm(params$origRateSim~factor(pulses))
 ggsave("originationRate.pdf",originationPlot, width=120, height=170, units="mm")
 ```
 
+## Plot of Origination / Extinction rate plotted against # pulses
+
+### As requested by reviewer
+
+```{r}
+originationExtinctionPlot <- 
+  qplot(x=factor(pulses), y=params$extRateSim / params$origRateSim, fill=factor(pulses), geom="boxplot") + 
+  scale_fill_brewer(palette = "Blues", guide="none") + 
+  labs(x="Pulses Observed", y="extinction rate / origination rate", title="Extinct. Rate / Orig Rate") 
+ggsave("originationOverExtinctionRate.pdf",originationExtinctionPlot, width=120, height=170, units="mm")
+```
+
 ## linear models
 
 ```{r}
@@ -141,3 +153,5 @@ ggplot(forPlot, aes(x=nTaxa, y=totalTime, color=pulses)) +
   geom_point(alpha=0.3, size=2) + 
   facet_grid(extRateCategory~origRateCategory)
 ```
+
+

@@ -1,0 +1,89 @@
+---
+title: "NewSchematicFigureMethods"
+author: "Andrew Barr"
+date: "March 16, 2017"
+output:
+  pdf_document: default
+  html_document:
+    keep_md: yes
+---
+```{r}
+library(NullTurnover)
+library(gridExtra)
+set.seed(1236)
+```
+
+```{r}
+params <- list(
+    origRateSim = 0.6, 
+    extRateSim = 0.2,
+    totalTime=7, 
+    sampRateSim = 1,
+    nruns = 1, 
+    plot=FALSE,
+    startTaxa = 5, 
+    nSamp = c(30,70),
+    nExtant=c(0,500),
+    nTotalTaxa = c(0,500),
+    maxAttempts = Inf
+  )
+recs <- do.call(simRecords, params)
+ranges <- fossilRecord2fossilRanges(recs[[1]][[1]])
+
+
+basicPlot <- plotRanges(ranges, returnValue = T)
+basicPlot
+
+binL <- 0.4
+criterion<- 1.5
+
+pulsePlot <- detectPulses(recs, plot = T, binLength = binL, criterion=criterion)
+pulsePlot
+
+rates <- data.frame(getOrigRates(ranges, binLength = binL))
+
+```
+
+```{r}
+panel1 <- basicPlot + labs(title="(A) Simulate Fossil Record", y="Cumulative # of Taxa")
+
+panel2 <- basicPlot + 
+           geom_vline(xintercept=rates$int.start, lty=5) + 
+           labs(title="(B) Apply Time Bins",y="Cumulative # of Taxa")
+panel3 <- ggplot(data=rates, 
+                 aes(xmin=int.start-0.05, xmax=int.end+0.05, ymin=0, ymax=pRate)) + 
+            geom_rect(fill="#045480") + 
+            labs(x="Time (Ma)", y="Turnover Rate", title="(C) Calculate Turnover") + 
+            theme_bw(20) + 
+            geom_hline(yintercept = quantile(rates$pRate, 0.75, na.rm=TRUE) * criterion, col="red") + 
+            annotate(geom="text", x=6, y=1.5,label=paste(criterion," * IQR"), col="red", size=7) + 
+            scale_x_reverse(limits=c(6.92, 0))
+
+panel4 <- basicPlot +
+            geom_rect(data=subset(rates, pRate > quantile(pRate, 0.75, na.rm=TRUE) * criterion),
+                      aes(xmin=int.start-0.05, xmax=int.end+0.05, ymin=0, ymax=60), inherit.aes = F, fill="transparent", color="red", size=1) + 
+            labs(title="(D) Record Number of Pulses", y="Cumulative # of Taxa")
+finalPlot <- grid.arrange(panel1, panel2, panel3, panel4, ncol=2, nrow=2)
+ggsave("schematicMethods.pdf",finalPlot, width=10, height=10, units="in")
+```
+
+## Plot for foote taxon types
+
+```{r}
+dat <- data.frame(xmin=c(0,0,2,1.2), 
+                  xmax=c(4,2,4,2.8), 
+                  ymin=c(0,1,2,3), 
+                  ymax=c(1,2,3,4), 
+                  Taxa=factor(1:4))
+levels(dat$Taxa) <- c("Through Ranging", "Crosses Lower", "Crosses Upper", "Singleton")
+dat$Taxa <- ordered(dat$Taxa, levels=rev(levels(dat$Taxa)))
+types_taxa <- ggplot(dat, aes(xmin=xmin, xmax=xmax, ymin=ymin+0.3, ymax=ymax-0.3)) + 
+  geom_rect(aes(xmin=1, xmax=3, ymin=0, ymax=4), alpha=0.1, linetype=2, color="black") + 
+  geom_rect(aes(fill=Taxa), alpha=0.9) + 
+  theme_minimal(20) + 
+  labs(x="Time (Ma)") + 
+  scale_y_continuous(breaks=NULL)
+types_taxa
+                                                                         
+#ggsave("foot_taxon_types.pdf", types_taxa, path="~/Dropbox/TurnoverPulseRedux/PaleoAnth_2016/", width=7, height=7, units="in")
+```
